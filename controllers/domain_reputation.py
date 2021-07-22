@@ -23,7 +23,7 @@ request_args.add_argument(common_strings.strings['key_value'], help=common_strin
                           required=True)
 request_args.add_argument(common_strings.strings['input_force'], type=inputs.boolean, required=False, default=False)
 
-logger = logging_setup.initialize(common_strings.strings['domain-reputation'], r'C:\Users\SanthoshSonti\Documents\git\domainreputation\logs\domain-reputation_api.log')
+logger = logging_setup.initialize(common_strings.strings['domain-reputation'], "/logs/domain-reputation_api.log")
 
 
 class DomainReputation(Resource):
@@ -34,7 +34,7 @@ class DomainReputation(Resource):
 
         value = args[common_strings.strings['key_value']]
 
-        logger.debug(f"Expansion scan request received for {value}")
+        logger.debug(f"Reputation scan request received for {value}")
 
         auth = request.headers.get(common_strings.strings['auth'])
 
@@ -54,7 +54,7 @@ class DomainReputation(Resource):
         try:
             ip = utils.resolve_domain_ip(value)
         except Exception as e:
-            logger.debug(f"Domain that doesn't resolve to an IP requested - {value, e}")
+            logger.debug(f"Domain that doesn't resolve to an IP requested - {value}", exc_info=e)
             return {
                        common_strings.strings['message']: f"{value}" + common_strings.strings[
                            'unresolved_domain_ip']
@@ -91,7 +91,7 @@ class DomainReputation(Resource):
                     f"{os.environ.get('WHOISXML_API')}?apiKey={os.environ.get('API_KEY_WHOIS_XML')}"
                     f"&domainName={value}")
             except Exception as e:
-                logger.critical(f'Exception occurred in whoisxml endpoint {e}')
+                logger.critical(f'Exception occurred in whoisxml endpoint', exc_info=e)
                 resp = None
 
             logger.debug(f"WHOISXML reputation scan for {value} is complete")
@@ -111,7 +111,7 @@ class DomainReputation(Resource):
             try:
                 queue_to_db.reputation_response_db_addition(value, output)
             except Exception as e:
-                logger.critical(common_strings.strings['database_issue'], e)
+                logger.critical(common_strings.strings['database_issue'], exc_info=e)
 
-            logger.debug(f"WHOISXML response for {value} is sent performing a new scan")
+            logger.debug(f"Reputation response for {value} is sent performing a new scan")
             return output, 200

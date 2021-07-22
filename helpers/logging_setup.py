@@ -8,4 +8,6 @@ def initialize(log_name, file_name):
     logger = logging.getLogger(log_name)
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
+    console = logging.StreamHandler()
+    logger.addHandler(console)
     return logger
