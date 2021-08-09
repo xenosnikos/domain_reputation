@@ -23,7 +23,7 @@ request_args.add_argument(common_strings.strings['key_value'], help=common_strin
                           required=True)
 request_args.add_argument(common_strings.strings['input_force'], type=inputs.boolean, required=False, default=False)
 
-logger = logging_setup.initialize(common_strings.strings['domain-reputation'], "/logs/domain-reputation_api.log")
+logger = logging_setup.initialize(common_strings.strings['domain-reputation'], "logs/domain-reputation_api.log")
 
 
 class DomainReputation(Resource):
